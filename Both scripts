@@ -1,0 +1,283 @@
+-- =====================================
+-- VillainHub Loader with Game Selection
+-- =====================================
+repeat task.wait() until game:IsLoaded()
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local PlayerGui = player:WaitForChild("PlayerGui")
+
+-- =========================
+-- KEY GUI SETUP
+-- =========================
+local KeyGUI = Instance.new("ScreenGui", PlayerGui)
+KeyGUI.Name = "KeyGUI"
+
+local MainFrame = Instance.new("Frame", KeyGUI)
+MainFrame.Size = UDim2.new(0,400,0,200)
+MainFrame.Position = UDim2.new(0.5,-200,0.5,-100)
+MainFrame.BackgroundColor3 = Color3.fromRGB(50,50,50)
+
+local Label = Instance.new("TextLabel", MainFrame)
+Label.Size = UDim2.new(1,0,0.3,0)
+Label.Text = "Key System"
+Label.TextScaled = true
+Label.BackgroundTransparency = 1
+Label.TextColor3 = Color3.fromRGB(255,255,255)
+
+local RedFrame = Instance.new("Frame", MainFrame)
+RedFrame.Size = UDim2.new(0.8,0,0.3,0)
+RedFrame.Position = UDim2.new(0.1,0,0.5,0)
+RedFrame.BackgroundColor3 = Color3.fromRGB(255,0,0)
+
+local KeyBox = Instance.new("TextBox", RedFrame)
+KeyBox.Size = UDim2.new(1,-10,1,-10)
+KeyBox.Position = UDim2.new(0,5,0,5)
+KeyBox.PlaceholderText = "Enter Key..."
+KeyBox.TextScaled = true
+KeyBox.BackgroundTransparency = 1
+KeyBox.TextColor3 = Color3.new(1,1,1)
+
+local GetKeyButton = Instance.new("TextButton", MainFrame)
+GetKeyButton.Size = UDim2.new(0.6,0,0.2,0)
+GetKeyButton.Position = UDim2.new(0.2,0,0.85,0)
+GetKeyButton.BackgroundColor3 = Color3.fromRGB(0,170,255)
+GetKeyButton.TextColor3 = Color3.new(1,1,1)
+GetKeyButton.Font = Enum.Font.SourceSansBold
+GetKeyButton.TextScaled = true
+GetKeyButton.Text = "Get Key"
+
+GetKeyButton.MouseButton1Click:Connect(function()
+    setclipboard("https://pastebin.com/raw/VmE2cPEi")
+    print("Key link copied to clipboard!")
+end)
+
+-- =========================
+-- GAME SELECTION GUI FUNCTION
+-- =========================
+local function ShowGameSelection()
+    local GameSelectGUI = Instance.new("ScreenGui", PlayerGui)
+    GameSelectGUI.Name = "GameSelectGUI"
+
+    local Frame = Instance.new("Frame", GameSelectGUI)
+    Frame.Size = UDim2.new(0,400,0,200)
+    Frame.Position = UDim2.new(0.5,-200,0.5,-100)
+    Frame.BackgroundColor3 = Color3.fromRGB(50,50,50)
+
+    local Title = Instance.new("TextLabel", Frame)
+    Title.Size = UDim2.new(1,0,0.3,0)
+    Title.Text = "Select Game"
+    Title.TextScaled = true
+    Title.BackgroundTransparency = 1
+    Title.TextColor3 = Color3.fromRGB(255,255,255)
+
+    local function CreateButton(name, posY, callback)
+        local Btn = Instance.new("TextButton", Frame)
+        Btn.Size = UDim2.new(0.6,0,0.25,0)
+        Btn.Position = UDim2.new(0.2,0,posY,0)
+        Btn.BackgroundColor3 = Color3.fromRGB(0,170,255)
+        Btn.TextColor3 = Color3.new(1,1,1)
+        Btn.Font = Enum.Font.SourceSansBold
+        Btn.TextScaled = true
+        Btn.Text = name
+        Btn.MouseButton1Click:Connect(callback)
+    end
+
+    -- SOUTH BRONX BUTTON
+    CreateButton("South Bronx", 0.35, function()
+        GameSelectGUI:Destroy()
+        print("Loading South Bronx script...")
+    -- =========================
+-- SOUTH BRONX SCRIPT
+-- =========================
+
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local hrp = character:WaitForChild("HumanoidRootPart")
+
+-- Locations
+local SouthBronxLocations = {
+    ["Main Gun Store 🔫"] = CFrame.new(219, 6, -158),
+    ["Black Market 💹"] = CFrame.new(671, 6, 251),
+    ["DealerShip 🚗"] = CFrame.new(738, 6, 439),
+    ["DealerShip Apartments 🌇"] = CFrame.new(717, 5, 548),
+    ["Clothes Store 👕"] = CFrame.new(-197, 6, -74),
+    ["Box Job Apartments 📦"] = CFrame.new(-527, 6, 142),
+    ["Bank 💳"] = CFrame.new(-47, 6, -340),
+    ["Fake ID Seller 🎫"] = CFrame.new(219, 6, -331),
+    ["DOA Turf 🔴"] = CFrame.new(-335, 6, -415),
+    ["OGZ Turf 🟣"] = CFrame.new(125, 6, -466),
+    ["YGZ Turf 🟢"] = CFrame.new(3, 6, 223),
+    ["Studio 🎙"] = CFrame.new(522, 6, -26),
+    ["Shoe Store 👟"] = CFrame.new(525, 7, -184),
+    ["Second Gun Store 🔫"] = CFrame.new(-459, 6, 328),
+    ["Exclusive Gun Store 🔫"] = CFrame.new(1131, 4, 173)
+}
+
+-- Tween walk teleport
+local function TeleportWalk(targetCFrame, speed)
+    speed = speed or 16
+    local distance = (targetCFrame.Position - hrp.Position).Magnitude
+    local duration = distance / speed
+
+    local tween = TweenService:Create(
+        hrp,
+        TweenInfo.new(duration, Enum.EasingStyle.Linear),
+        {CFrame = targetCFrame}
+    )
+
+    tween:Play()
+end
+
+-- Load Orion
+local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/jensonhirst/Orion/main/source"))()
+
+local Window = OrionLib:MakeWindow({
+    Name = "VillainHub | South Bronx",
+    HidePremium = false,
+    SaveConfig = true,
+    ConfigFolder = "VillainHub_SB"
+})
+
+local TeleportTab = Window:MakeTab({
+    Name = "Teleport",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+-- Dropdown
+local options = {"None"}
+for name,_ in pairs(SouthBronxLocations) do
+    table.insert(options, name)
+end
+
+TeleportTab:AddDropdown({
+    Name = "Teleport",
+    Default = "None",
+    Options = options,
+    Callback = function(selected)
+        if selected == "None" then return end
+        TeleportWalk(SouthBronxLocations[selected], 16)
+    end
+})
+
+OrionLib:Init()
+    end)
+
+    -- FIGHT IN SCHOOL BUTTON
+    CreateButton("Fight in a School", 0.65, function()
+        GameSelectGUI:Destroy()
+        print("Loading Fight in a School script...")-- =========================
+-- FIGHT IN A SCHOOL SCRIPT
+-- =========================
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+-- Load Orion
+local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/jensonhirst/Orion/main/source"))()
+
+local Window = OrionLib:MakeWindow({
+    Name = "VillainHub | Fight in a School",
+    HidePremium = false,
+    SaveConfig = true,
+    ConfigFolder = "VillainHub_FIAS"
+})
+
+-- =========================
+-- COMBAT TAB
+-- =========================
+local CombatTab = Window:MakeTab({
+    Name = "Combat",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+CombatTab:AddDropdown({
+    Name = "Style Changer",
+    Default = "None",
+    Options = {"None", "Hawk", "OMNI", "Hitman", "Philly", "Dukes", "Crashout"},
+    Callback = function(style)
+        if style == "None" then return end
+        if player:FindFirstChild("leaderstats") then
+            local class = player.leaderstats:FindFirstChild("Class")
+            if class then
+                class.Value = style
+            end
+        end
+    end
+})
+
+-- =========================
+-- TELEPORT TAB
+-- =========================
+local TeleportTab = Window:MakeTab({
+    Name = "Teleport",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+TeleportTab:AddDropdown({
+    Name = "Teleport",
+    Default = "None",
+    Options = {"None", "Library", "Gym", "Outside"},
+    Callback = function(selected)
+        if selected == "None" then return end
+
+        local char = player.Character or player.CharacterAdded:Wait()
+        local hrp = char:WaitForChild("HumanoidRootPart")
+
+        if selected == "Library" then
+            hrp.CFrame = CFrame.new(-149.61, 4.57, 129.03)
+        elseif selected == "Gym" then
+            hrp.CFrame = CFrame.new(-149.48, 4.57, 20.03)
+        elseif selected == "Outside" then
+            hrp.CFrame = CFrame.new(-201.84, 6.75, 155.90)
+        end
+    end
+})
+
+-- =========================
+-- HEAVY TAB
+-- =========================
+local HeavyTab = Window:MakeTab({
+    Name = "Heavy",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+HeavyTab:AddDropdown({
+    Name = "Heavy Style",
+    Default = "None",
+    Options = {"None", "Truck", "Drop Kick"},
+    Callback = function(style)
+        if style == "None" then return end
+        if player:FindFirstChild("leaderstats") then
+            local heavy = player.leaderstats:FindFirstChild("Heavy")
+            if heavy then
+                heavy.Value = style
+            end
+        end
+    end
+})
+
+OrionLib:Init()
+    end)
+end
+
+-- =========================
+-- KEY CHECK
+-- =========================
+KeyBox.FocusLost:Connect(function(enterPressed)
+    if not enterPressed then return end
+    if KeyBox.Text == "Villainhub" then
+        KeyGUI:Destroy()
+        ShowGameSelection()
+    else
+        print("Incorrect key!")
+        KeyBox.Text = ""
+    end
+end)
