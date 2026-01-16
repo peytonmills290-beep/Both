@@ -4,6 +4,8 @@
 repeat task.wait() until game:IsLoaded()
 
 local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
 local player = Players.LocalPlayer
 local PlayerGui = player:WaitForChild("PlayerGui")
 
@@ -53,7 +55,37 @@ GetKeyButton.MouseButton1Click:Connect(function()
 end)
 
 -- =========================
--- GAME SELECTION GUI FUNCTION
+-- SOUTH BRONX DATA (ready to use)
+-- =========================
+local SouthBronxLocations = {
+    ["Main Gun Store 🔫"] = CFrame.new(219, 6, -158),
+    ["Black Market 💹"] = CFrame.new(671, 6, 251),
+    ["DealerShip 🚗"] = CFrame.new(738, 6, 439),
+    ["DealerShip Apartments 🌇"] = CFrame.new(717, 5, 548),
+    ["Clothes Store 👕"] = CFrame.new(-197, 6, -74),
+    ["Box Job Apartments 📦"] = CFrame.new(-527, 6, 142),
+    ["Bank 💳"] = CFrame.new(-47, 6, -340),
+    ["Fake ID Seller 🎫"] = CFrame.new(219, 6, -331),
+    ["DOA Turf 🔴"] = CFrame.new(-335, 6, -415),
+    ["OGZ Turf 🟣"] = CFrame.new(125, 6, -466),
+    ["YGZ Turf 🟢"] = CFrame.new(3, 6, 223),
+    ["Studio 🎙"] = CFrame.new(522, 6, -26),
+    ["Shoe Store 👟"] = CFrame.new(525, 7, -184),
+    ["Second Gun Store 🔫"] = CFrame.new(-459, 6, 328),
+    ["Exclusive Gun Store 🔫"] = CFrame.new(1131, 4, 173)
+}
+
+local function TeleportWalk(targetCFrame, speed)
+    local char = player.Character or player.CharacterAdded:Wait()
+    local hrp = char:WaitForChild("HumanoidRootPart")
+    speed = speed or 16
+    local distance = (targetCFrame.Position - hrp.Position).Magnitude
+    local duration = distance / speed
+    TweenService:Create(hrp, TweenInfo.new(duration, Enum.EasingStyle.Linear), {CFrame = targetCFrame}):Play()
+end
+
+-- =========================
+-- GAME SELECTION GUI
 -- =========================
 local function ShowGameSelection()
     local GameSelectGUI = Instance.new("ScreenGui", PlayerGui)
@@ -87,168 +119,90 @@ local function ShowGameSelection()
     CreateButton("South Bronx", 0.35, function()
         GameSelectGUI:Destroy()
         print("Loading South Bronx script...")
--- =========================
--- SOUTH BRONX SCRIPT WITH ESP
--- =========================
 
-local Players = game:GetService("Players")
-local TweenService = game:GetService("TweenService")
-local RunService = game:GetService("RunService")
+        -- Orion GUI
+        local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/jensonhirst/Orion/main/source"))()
+        local Window = OrionLib:MakeWindow({
+            Name = "VillainHub | South Bronx",
+            HidePremium = false,
+            SaveConfig = true,
+            ConfigFolder = "VillainHub_SB"
+        })
 
-local player = Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
-local hrp = character:WaitForChild("HumanoidRootPart")
+        -- Teleport Tab
+        local TeleportTab = Window:MakeTab({Name="Teleport", Icon="rbxassetid://4483345998", PremiumOnly=false})
+        local options = {"None"}
+        for name,_ in pairs(SouthBronxLocations) do table.insert(options,name) end
+        TeleportTab:AddDropdown({
+            Name="Teleport",
+            Default="None",
+            Options=options,
+            Callback=function(selected)
+                if selected=="None" then return end
+                TeleportWalk(SouthBronxLocations[selected],16)
+            end
+        })
 
--- =========================
--- Locations
--- =========================
-local SouthBronxLocations = {
-    ["Main Gun Store 🔫"] = CFrame.new(219, 6, -158),
-    ["Black Market 💹"] = CFrame.new(671, 6, 251),
-    ["DealerShip 🚗"] = CFrame.new(738, 6, 439),
-    ["DealerShip Apartments 🌇"] = CFrame.new(717, 5, 548),
-    ["Clothes Store 👕"] = CFrame.new(-197, 6, -74),
-    ["Box Job Apartments 📦"] = CFrame.new(-527, 6, 142),
-    ["Bank 💳"] = CFrame.new(-47, 6, -340),
-    ["Fake ID Seller 🎫"] = CFrame.new(219, 6, -331),
-    ["DOA Turf 🔴"] = CFrame.new(-335, 6, -415),
-    ["OGZ Turf 🟣"] = CFrame.new(125, 6, -466),
-    ["YGZ Turf 🟢"] = CFrame.new(3, 6, 223),
-    ["Studio 🎙"] = CFrame.new(522, 6, -26),
-    ["Shoe Store 👟"] = CFrame.new(525, 7, -184),
-    ["Second Gun Store 🔫"] = CFrame.new(-459, 6, 328),
-    ["Exclusive Gun Store 🔫"] = CFrame.new(1131, 4, 173)
-}
+        -- Combat Tab
+        local CombatTab = Window:MakeTab({Name="Combat", Icon="rbxassetid://4483345998", PremiumOnly=false})
+        local InfAmmo = false
+        CombatTab:AddToggle({
+            Name="Infinite Ammo",
+            Default=false,
+            Callback=function(value)
+                InfAmmo=value
+                print("Infinite Ammo:",InfAmmo)
+            end
+        })
 
--- =========================
--- Tween walk teleport function
--- =========================
-local function TeleportWalk(targetCFrame, speed)
-    speed = speed or 16
-    local distance = (targetCFrame.Position - hrp.Position).Magnitude
-    local duration = distance / speed
+        -- ESP Tab
+        local ESPTab = Window:MakeTab({Name="ESP", Icon="rbxassetid://4483345998", PremiumOnly=false})
+        local ESPEnabled = false
+        ESPTab:AddToggle({
+            Name="Enable ESP",
+            Default=false,
+            Callback=function(value)
+                ESPEnabled=value
+            end
+        })
 
-    local tween = TweenService:Create(hrp, TweenInfo.new(duration, Enum.EasingStyle.Linear), {CFrame = targetCFrame})
-    tween:Play()
-end
-
--- =========================
--- Orion GUI
--- =========================
-local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/jensonhirst/Orion/main/source"))()
-local Window = OrionLib:MakeWindow({
-    Name = "VillainHub | South Bronx",
-    HidePremium = false,
-    SaveConfig = true,
-    ConfigFolder = "VillainHub_SB"
-})
-
--- =========================
--- Teleport Tab
--- =========================
-local TeleportTab = Window:MakeTab({
-    Name = "Teleport",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
-})
-
-local options = {"None"}
-for name,_ in pairs(SouthBronxLocations) do
-    table.insert(options, name)
-end
-
-TeleportTab:AddDropdown({
-    Name = "Teleport",
-    Default = "None",
-    Options = options,
-    Callback = function(selected)
-        if selected == "None" then return end
-        TeleportWalk(SouthBronxLocations[selected], 16)
-    end
-})
-
--- =========================
--- Combat Tab (inf ammo toggle placeholder)
--- =========================
-local CombatTab = Window:MakeTab({
-    Name = "Combat",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
-})
-
-local InfAmmo = false
-CombatTab:AddToggle({
-    Name = "Infinite Ammo",
-    Default = false,
-    Callback = function(value)
-        InfAmmo = value
-        print("Infinite Ammo:", InfAmmo)
-    end
-})
-
--- =========================
--- ESP Tab
--- =========================
-local ESPTab = Window:MakeTab({
-    Name = "ESP",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
-})
-
-local ESPEnabled = false
-ESPTab:AddToggle({
-    Name = "Enable ESP",
-    Default = false,
-    Callback = function(value)
-        ESPEnabled = value
-    end
-})
-
--- ESP drawing
-local ESPBoxes = {}
-
-RunService.RenderStepped:Connect(function()
-    for _, plr in pairs(Players:GetPlayers()) do
-        if plr ~= player and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-            local hrpTarget = plr.Character.HumanoidRootPart
-
-            if ESPEnabled then
-                if not ESPBoxes[plr] then
-                    local box = Drawing.new("Square")
-                    box.Color = Color3.fromRGB(255,0,0)
-                    box.Thickness = 2
-                    box.Transparency = 1
-                    box.Filled = false
-                    ESPBoxes[plr] = box
-                end
-
-                local vector, onScreen = workspace.CurrentCamera:WorldToViewportPoint(hrpTarget.Position)
-                if onScreen then
-                    ESPBoxes[plr].Position = Vector2.new(vector.X-15, vector.Y-15)
-                    ESPBoxes[plr].Size = Vector2.new(30,30)
-                    ESPBoxes[plr].Visible = true
-                else
-                    ESPBoxes[plr].Visible = false
-                end
-            else
-                if ESPBoxes[plr] then
-                    ESPBoxes[plr]:Remove()
-                    ESPBoxes[plr] = nil
+        local ESPBoxes = {}
+        RunService.RenderStepped:Connect(function()
+            for _, plr in pairs(Players:GetPlayers()) do
+                if plr ~= player and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+                    local hrpTarget = plr.Character.HumanoidRootPart
+                    if ESPEnabled then
+                        if not ESPBoxes[plr] then
+                            local box = Drawing.new("Square")
+                            box.Color = Color3.fromRGB(255,0,0)
+                            box.Thickness = 2
+                            box.Transparency = 1
+                            box.Filled = false
+                            ESPBoxes[plr]=box
+                        end
+                        local vector, onScreen = workspace.CurrentCamera:WorldToViewportPoint(hrpTarget.Position)
+                        if onScreen then
+                            ESPBoxes[plr].Position=Vector2.new(vector.X-15, vector.Y-15)
+                            ESPBoxes[plr].Size=Vector2.new(30,30)
+                            ESPBoxes[plr].Visible=true
+                        else
+                            ESPBoxes[plr].Visible=false
+                        end
+                    else
+                        if ESPBoxes[plr] then ESPBoxes[plr]:Remove() ESPBoxes[plr]=nil end
+                    end
                 end
             end
-        end
-    end
-end)
+        end)
 
--- =========================
--- Initialize GUI
--- =========================
-OrionLib:Init()
+        OrionLib:Init()
+    end)
 
-    -- FIGHT IN SCHOOL BUTTON
+    -- FIGHT IN A SCHOOL BUTTON
     CreateButton("Fight in a School", 0.65, function()
         GameSelectGUI:Destroy()
-        print("Loading Fight in a School script...")-- =========================
+        print("Loading Fight in a School script...")
+-- =========================
 -- FIGHT IN A SCHOOL SCRIPT
 -- =========================
 
@@ -277,7 +231,7 @@ local CombatTab = Window:MakeTab({
 CombatTab:AddDropdown({
     Name = "Style Changer",
     Default = "None",
-    Options = {"None", "Hawk", "OMNI", "Hitman", "Philly", "Dukes", "Crashout"},
+    Options = {"None", "Hawk", "OMNI", "Hitman", "Philly", "Dukes", "Compound V"},
     Callback = function(style)
         if style == "None" then return end
         if player:FindFirstChild("leaderstats") then
