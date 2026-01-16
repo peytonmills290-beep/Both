@@ -87,18 +87,21 @@ local function ShowGameSelection()
     CreateButton("South Bronx", 0.35, function()
         GameSelectGUI:Destroy()
         print("Loading South Bronx script...")
-    -- =========================
--- SOUTH BRONX SCRIPT
+-- =========================
+-- SOUTH BRONX SCRIPT WITH ESP
 -- =========================
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
 
 local player = Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local hrp = character:WaitForChild("HumanoidRootPart")
 
+-- =========================
 -- Locations
+-- =========================
 local SouthBronxLocations = {
     ["Main Gun Store 🔫"] = CFrame.new(219, 6, -158),
     ["Black Market 💹"] = CFrame.new(671, 6, 251),
@@ -117,24 +120,22 @@ local SouthBronxLocations = {
     ["Exclusive Gun Store 🔫"] = CFrame.new(1131, 4, 173)
 }
 
--- Tween walk teleport
+-- =========================
+-- Tween walk teleport function
+-- =========================
 local function TeleportWalk(targetCFrame, speed)
     speed = speed or 16
     local distance = (targetCFrame.Position - hrp.Position).Magnitude
     local duration = distance / speed
 
-    local tween = TweenService:Create(
-        hrp,
-        TweenInfo.new(duration, Enum.EasingStyle.Linear),
-        {CFrame = targetCFrame}
-    )
-
+    local tween = TweenService:Create(hrp, TweenInfo.new(duration, Enum.EasingStyle.Linear), {CFrame = targetCFrame})
     tween:Play()
 end
 
--- Load Orion
+-- =========================
+-- Orion GUI
+-- =========================
 local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/jensonhirst/Orion/main/source"))()
-
 local Window = OrionLib:MakeWindow({
     Name = "VillainHub | South Bronx",
     HidePremium = false,
@@ -142,13 +143,15 @@ local Window = OrionLib:MakeWindow({
     ConfigFolder = "VillainHub_SB"
 })
 
+-- =========================
+-- Teleport Tab
+-- =========================
 local TeleportTab = Window:MakeTab({
     Name = "Teleport",
     Icon = "rbxassetid://4483345998",
     PremiumOnly = false
 })
 
--- Dropdown
 local options = {"None"}
 for name,_ in pairs(SouthBronxLocations) do
     table.insert(options, name)
@@ -164,8 +167,83 @@ TeleportTab:AddDropdown({
     end
 })
 
+-- =========================
+-- Combat Tab (inf ammo toggle placeholder)
+-- =========================
+local CombatTab = Window:MakeTab({
+    Name = "Combat",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+local InfAmmo = false
+CombatTab:AddToggle({
+    Name = "Infinite Ammo",
+    Default = false,
+    Callback = function(value)
+        InfAmmo = value
+        print("Infinite Ammo:", InfAmmo)
+    end
+})
+
+-- =========================
+-- ESP Tab
+-- =========================
+local ESPTab = Window:MakeTab({
+    Name = "ESP",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+local ESPEnabled = false
+ESPTab:AddToggle({
+    Name = "Enable ESP",
+    Default = false,
+    Callback = function(value)
+        ESPEnabled = value
+    end
+})
+
+-- ESP drawing
+local ESPBoxes = {}
+
+RunService.RenderStepped:Connect(function()
+    for _, plr in pairs(Players:GetPlayers()) do
+        if plr ~= player and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+            local hrpTarget = plr.Character.HumanoidRootPart
+
+            if ESPEnabled then
+                if not ESPBoxes[plr] then
+                    local box = Drawing.new("Square")
+                    box.Color = Color3.fromRGB(255,0,0)
+                    box.Thickness = 2
+                    box.Transparency = 1
+                    box.Filled = false
+                    ESPBoxes[plr] = box
+                end
+
+                local vector, onScreen = workspace.CurrentCamera:WorldToViewportPoint(hrpTarget.Position)
+                if onScreen then
+                    ESPBoxes[plr].Position = Vector2.new(vector.X-15, vector.Y-15)
+                    ESPBoxes[plr].Size = Vector2.new(30,30)
+                    ESPBoxes[plr].Visible = true
+                else
+                    ESPBoxes[plr].Visible = false
+                end
+            else
+                if ESPBoxes[plr] then
+                    ESPBoxes[plr]:Remove()
+                    ESPBoxes[plr] = nil
+                end
+            end
+        end
+    end
+end)
+
+-- =========================
+-- Initialize GUI
+-- =========================
 OrionLib:Init()
-    end)
 
     -- FIGHT IN SCHOOL BUTTON
     CreateButton("Fight in a School", 0.65, function()
